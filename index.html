@@ -1,33 +1,274 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Like A Nut</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f9;
-            color: #333;
-        }
-        .container {
-            text-align: center;
-        }
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Larry's Sandbox</title>
+  
+  <!-- Tailwind CSS & Material Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <style>
+    /* Custom CSS to handle transition mechanics and background rendering */
+    .bg-sandbox {
+      background-image: url('assets/images/likeanut-sandbox.webp');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    
+    /* Smooth transition for theme swapping */
+    .theme-transition {
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* Frosted glass utility classes */
+    .glass-nut {
+      background: rgba(43, 24, 9, 0.35); /* Warm, dark chocolate transparency */
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 235, 205, 0.2);
+    }
+
+    .glass-no-nut {
+      background: rgba(17, 24, 39, 0.85); /* Deep slate minimal gray */
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Tactile hover animations for the links */
+    .link-card {
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .link-card:hover {
+      transform: translateY(-4px);
+    }
+  </style>
 </head>
-<body>
-    <div class="container">
-        <h1>Like A Nut</h1>
-        <p>Coming Soon...</p>
+<body class="theme-transition bg-zinc-900 text-white min-h-screen flex flex-col items-center justify-between p-4 md:p-8 bg-sandbox" id="main-body">
+
+  <!-- Background overlay for contrast control -->
+  <div class="absolute inset-0 theme-transition bg-black/30 z-0" id="bg-overlay"></div>
+
+  <!-- Header: Toggle & Quick Search -->
+  <header class="w-full max-w-4xl flex flex-col md:flex-row items-center justify-between gap-4 z-10 relative mb-6">
+    <div class="text-center md:text-left">
+      <h1 class="text-2xl md:text-3xl font-black tracking-tight drop-shadow" id="site-title">
+        Larry's Sandbox
+      </h1>
+      <p class="text-xs opacity-75 mt-0.5 tracking-wider uppercase font-semibold" id="site-subtitle">
+        sometimes you feel like a nut...
+      </p>
     </div>
+
+    <!-- The Jingle/Mood Toggle Switch -->
+    <div class="flex items-center gap-3 bg-black/40 p-2 rounded-full border border-white/10 shadow-lg">
+      <span class="text-xs font-bold tracking-wider uppercase pl-3" id="toggle-label">Mood:</span>
+      <button 
+        onclick="toggleMood()" 
+        class="theme-transition flex items-center justify-between gap-2 px-4 py-2 rounded-full font-bold text-sm shadow-md active:scale-95"
+        id="mood-btn"
+      >
+        <span id="mood-icon">🥜</span>
+        <span id="mood-text">Feeling Nutty</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="w-full max-w-4xl z-10 relative flex-grow flex flex-col justify-center">
+    
+    <!-- Central Launcher Card -->
+    <div class="theme-transition w-full p-6 md:p-8 rounded-3xl shadow-2xl glass-nut" id="dashboard-box">
+      
+      <!-- Interactive Web Search Utility -->
+      <div class="mb-8">
+        <form action="https://www.google.com/search" method="get" class="relative">
+          <span class="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+          <input 
+            type="text" 
+            name="q" 
+            placeholder="Search the web..." 
+            class="theme-transition w-full pl-12 pr-4 py-3 bg-black/40 rounded-2xl border border-white/10 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 text-sm placeholder-gray-400 shadow-inner"
+            id="search-input"
+          />
+        </form>
+      </div>
+
+      <!-- Categories & Links Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" id="links-grid">
+        <!-- Javascript renders your links here dynamically so it's super easy to modify later -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full max-w-4xl text-center pt-8 pb-2 z-10 relative text-xs font-semibold tracking-widest uppercase opacity-60">
+    likeanut.com &bull; Always Keep it Nutty
+  </footer>
+
+  <!-- Link Configuration & Dynamic Toggle Engine -->
+  <script>
+    // 1. YOUR LAUNCHPAD LINKS CONFIGURATION
+    // Change, add, or remove links here whenever you want!
+    const MY_LINKS = [
+      {
+        category: "Daily Briefing",
+        icon: "newspaper",
+        items: [
+          { name: "Google News", url: "https://news.google.com" },
+          { name: "Weather Standby", url: "https://weather.com" },
+          { name: "Market Pulse", url: "https://finance.yahoo.com" }
+        ]
+      },
+      {
+        category: "Sports Hub",
+        icon: "sports_kabaddi",
+        items: [
+          { name: "Angels Baseball", url: "https://www.mlb.com/angels" },
+          { name: "Anaheim Ducks", url: "https://www.nhl.com/ducks" },
+          { name: "USC Trojans", url: "https://usctrojans.com" }
+        ]
+      },
+      {
+        category: "Admin & Dev Tools",
+        icon: "admin_panel_settings",
+        items: [
+          { name: "Cloudflare Portal", url: "https://dash.cloudflare.com" },
+          { name: "GitHub Repositories", url: "https://github.com" },
+          { name: "Nutshell Sandbox CLI", url: "#" }
+        ]
+      }
+    ];
+
+    // State engine
+    let isNutty = true;
+
+    // Renders link cards onto the dashboard screen
+    function renderLinks() {
+      const grid = document.getElementById('links-grid');
+      grid.innerHTML = '';
+
+      MY_LINKS.forEach(cat => {
+        const catCard = document.createElement('div');
+        catCard.className = `theme-transition flex flex-col gap-3 p-4 rounded-2xl bg-black/20 border border-white/5 shadow`;
+        
+        // Header
+        const header = document.createElement('div');
+        header.className = "flex items-center gap-2 mb-1";
+        
+        const icon = document.createElement('span');
+        icon.className = "material-icons text-sm opacity-80 transition-colors duration-300";
+        icon.id = `icon-${cat.category.replace(/\s+/g, '')}`;
+        icon.textContent = cat.icon;
+        
+        const title = document.createElement('h3');
+        title.className = "text-sm font-bold uppercase tracking-wider text-amber-200 transition-colors duration-500";
+        title.id = `title-${cat.category.replace(/\s+/g, '')}`;
+        title.textContent = cat.category;
+
+        header.appendChild(icon);
+        header.appendChild(title);
+        catCard.appendChild(header);
+
+        // Link Items
+        const linksList = document.createElement('div');
+        linksList.className = "flex flex-col gap-2";
+
+        cat.items.forEach(link => {
+          const a = document.createElement('a');
+          a.href = link.url;
+          a.target = "_blank";
+          a.className = "theme-transition link-card flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 text-xs font-semibold hover:bg-white/10 hover:border-amber-400/30 text-zinc-100";
+          
+          const label = document.createElement('span');
+          label.textContent = link.name;
+          
+          const arrow = document.createElement('span');
+          arrow.className = "material-icons text-xs opacity-50";
+          arrow.textContent = "north_east";
+
+          a.appendChild(label);
+          a.appendChild(arrow);
+          linksList.appendChild(a);
+        });
+
+        catCard.appendChild(linksList);
+        grid.appendChild(catCard);
+      });
+    }
+
+    // Toggle back and forth between "Feel like a nut" and "Don't" modes
+    function toggleMood() {
+      isNutty = !isNutty;
+      
+      const body = document.getElementById('main-body');
+      const bgOverlay = document.getElementById('bg-overlay');
+      const box = document.getElementById('dashboard-box');
+      const btn = document.getElementById('mood-btn');
+      const moodText = document.getElementById('mood-text');
+      const moodIcon = document.getElementById('mood-icon');
+      const sub = document.getElementById('site-subtitle');
+      const search = document.getElementById('search-input');
+
+      if (isNutty) {
+        // "Feel Like a Nut" Mode: Retro, cloudy background image, warm caramel highlights
+        body.classList.add('bg-sandbox');
+        bgOverlay.className = "absolute inset-0 theme-transition bg-black/25 z-0";
+        box.className = "theme-transition w-full p-6 md:p-8 rounded-3xl shadow-2xl glass-nut";
+        
+        btn.className = "theme-transition flex items-center justify-between gap-2 px-4 py-2 rounded-full font-bold text-sm shadow-md bg-amber-500 hover:bg-amber-400 text-amber-950 active:scale-95";
+        moodIcon.textContent = "🥜";
+        moodText.textContent = "Feeling Nutty";
+        sub.textContent = "sometimes you feel like a nut...";
+        
+        search.className = "theme-transition w-full pl-12 pr-4 py-3 bg-black/40 rounded-2xl border border-white/10 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 text-sm placeholder-gray-400 shadow-inner";
+
+        // Restore colorful headers
+        MY_LINKS.forEach(cat => {
+          const t = document.getElementById(`title-${cat.category.replace(/\s+/g, '')}`);
+          const i = document.getElementById(`icon-${cat.category.replace(/\s+/g, '')}`);
+          if (t && i) {
+            t.className = "text-sm font-bold uppercase tracking-wider text-amber-200 transition-colors duration-500";
+            i.className = "material-icons text-sm opacity-80 text-amber-400 transition-colors duration-500";
+          }
+        });
+
+      } else {
+        // "Don't Feel Like a Nut" Mode: Sleek minimal, deep dark dark mode, flat grayscale accents
+        body.classList.remove('bg-sandbox');
+        bgOverlay.className = "absolute inset-0 theme-transition bg-zinc-950 z-0";
+        box.className = "theme-transition w-full p-6 md:p-8 rounded-3xl shadow-2xl glass-no-nut";
+        
+        btn.className = "theme-transition flex items-center justify-between gap-2 px-4 py-2 rounded-full font-bold text-sm shadow-md bg-zinc-800 hover:bg-zinc-750 text-zinc-100 active:scale-95 border border-zinc-700";
+        moodIcon.textContent = "🚫";
+        moodText.textContent = "Sober State";
+        sub.textContent = "...sometimes you don't.";
+        
+        search.className = "theme-transition w-full pl-12 pr-4 py-3 bg-zinc-900 rounded-2xl border border-zinc-800 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 text-sm placeholder-zinc-500 shadow-inner";
+
+        // Grayscale headers
+        MY_LINKS.forEach(cat => {
+          const t = document.getElementById(`title-${cat.category.replace(/\s+/g, '')}`);
+          const i = document.getElementById(`icon-${cat.category.replace(/\s+/g, '')}`);
+          if (t && i) {
+            t.className = "text-sm font-bold uppercase tracking-wider text-zinc-400 transition-colors duration-500";
+            i.className = "material-icons text-sm opacity-50 text-zinc-400 transition-colors duration-500";
+          }
+        });
+      }
+    }
+
+    // Run-time Init
+    renderLinks();
+    // Prime button color on page load
+    document.getElementById('mood-btn').className = "theme-transition flex items-center justify-between gap-2 px-4 py-2 rounded-full font-bold text-sm shadow-md bg-amber-500 hover:bg-amber-400 text-amber-950 active:scale-95";
+    MY_LINKS.forEach(cat => {
+      const i = document.getElementById(`icon-${cat.category.replace(/\s+/g, '')}`);
+      if (i) i.className = "material-icons text-sm opacity-80 text-amber-400 transition-colors duration-500";
+    });
+  </script>
 </body>
 </html>
